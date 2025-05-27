@@ -6,6 +6,7 @@ windows.forEach((window, index) => {
         if (index === 0) {
             window.innerHTML += `
                 <div class="buttons">
+                    <div class="backBtn" style="visibility: hidden;">back</div>
                     <div class="nextBtn">next</div>
                     <div class="closeBtn">close</div>
                 </div>`;
@@ -35,6 +36,12 @@ document.querySelectorAll(".backBtn").forEach(btn => {
 
 document.querySelectorAll(".closeBtn").forEach(btn => {
     btn.addEventListener("click", closeWindow);
+});
+
+document.querySelectorAll(".finishBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        window.close();
+    });
 });
 
 function nextWindow() {

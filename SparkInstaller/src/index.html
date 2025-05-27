@@ -14,36 +14,64 @@
         <div class="name">Installation</div>
         <div class="name">Finish</div>
     </div>
+
     <div class="window">
-        <div class="message">Thank you for installing with Spark Installer!</div>
+        <div class="message message1">Thank you for installing with Spark Installer!</div>
     </div>
+
     <div class="window">
-        <div class="message">Select the installation directory.</div>
-        <input type="text" class="installPath" placeholder="C:\Program Files" >
-        <input type="file" class="browseBtn" id="browseBtn" value="Browse" style="display: none;">
-        <label for="browseBtn">browse</label>
-        <div class="driveInfo">
-            <div class="driveName">Drive Name</div>
-            <div class="driveSize">Drive Size</div>
-            <div class="driveFreeSpace">Free Space</div>
-            <div class="appSize">App size</div>
+        <div class="message message2">
+            <div class="messageText">Select the installation directory.</div>
+            <div class="dirInput">
+                <input type="text" class="installPath" placeholder="C:\Program Files" >
+                <div class="browseBtn">Browse...</div>
+            </div>
+            <div class="driveInfo">
+                <div class="driveSize">Drive space: </div>
+                <div class="driveFreeSpace">Free Space: </div>
+                <div class="appSize">App size: </div>
+            </div>
         </div>
     </div>
+
     <div class="window">
-        <div class="message">Create shortcuts for:</div>
-        <input type="checkbox" class="startMenuShortcut">
-        <input type="checkbox" class="desktopShortcut">
-    </div>
-    <div class="window">
-        <div class="message">Installation in progress. Please wait...</div>
-        <div class="progressBar"></div>
+        <div class="message message3">
+            <div class="messageText2">Create shortcuts for:</div>
+            <div class="shortcutOptions">
+                <div class="shortcutOption">
+                    <label for="startMenuShortcut">Add Starting Menu Shortcut?</label>
+                    <input type="checkbox" id="startMenuShortcut" class="startMenuShortcut">
+                </div>
+                <div class="shortcutOption">
+                    <label for="desktopShortcut">Add Desktop Shortcut?</label>
+                    <input type="checkbox" id="desktopShortcut" class="desktopShortcut">
+                </div>
+                </div>
+        </div>
         <div class="buttons">
-            <div class="cancelBtn">cancel</div>
+            <div class="backBtn">back</div>
+            <div class="nextBtn">install</div>
+            <div class="closeBtn">close</div>
         </div>
     </div>
+
     <div class="window">
-        <div class="message">Installation complete! You can now run the application.</div>
+        <div class="message message4">
+            Installation in progress. Please wait...
+            <img src="img/loading.gif" alt="loading gif" class="loadingGif">
+        </div>
         <div class="buttons">
+            <div class="backBtn" style="visibility: hidden;">back</div>
+            <div class="nextBtn" style="visibility: hidden;">next</div>
+            <div class="closeBtn">cancel</div>
+        </div>
+    </div>
+
+    <div class="window">
+        <div class="message message1">Installation complete! You can now use the app.</div>
+        <div class="buttons">
+            <div class="backBtn" style="visibility: hidden;">back</div>
+            <div class="nextBtn" style="visibility: hidden;">next</div>
             <div class="finishBtn">finish</div>
         </div>
     </div>
