@@ -1,5 +1,8 @@
-// Settings.json is used by the Installer to set the values for installer
-// e.g. the directory of the original executable which will be pasted into the installation directory and other things
 {
-    "exeDirectory": "C:\\Program Files\\SparkInstaller"
+    "comment": "This file contains settings for the Spark Installer application.",
+    "comment2": "Modify the 'exeDirectory' to the path where your app with executable is located.",
+    "exeDirectory": "C:\\Program Files\\SparkInstaller",
+    "appInstallationPath": false,
+    "dekstopIconPath": false,
+    "startMenuIconPath": false
 }

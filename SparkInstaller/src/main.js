@@ -21,6 +21,7 @@ app.on("ready", createWindow);
 // Installer functionality
 let fs = require("fs");
 let settings = require("./settings.json");
+console.log(settings);
 
 // Copy the app to a specified directory (e.g. installation dir) and also add an icon to start menu, desktop if specified
 function installApp(pathToApp, copyDir = "C:\Program Files", startMenuIcon = false, desktopIcon = false) {
@@ -33,4 +34,10 @@ function installApp(pathToApp, copyDir = "C:\Program Files", startMenuIcon = fal
     else {
         throw new Error("Invalid arguments passed to installApp function.");
     }
+}
+
+function uninstallApp(uninstallDir = "C:\Program Files", startMenuIcon = false, desktopIcon = false) {
+    // Remove the app from the specified directory
+    // Remove the start menu icon if it exists
+    // Remove the desktop icon if it exists
 }
