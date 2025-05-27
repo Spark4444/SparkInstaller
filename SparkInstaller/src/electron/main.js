@@ -1,7 +1,7 @@
 // THIS INSTALLER IS SPECIFICALLY MADE FOR WINDOWS
 
 // Electron
-let { app, BrowserWindow, ipcMain } = require("electron");
+let { app, BrowserWindow, ipcMain, dialog } = require("electron");
 let path = require("path");
 
 let createWindow = () => {
@@ -13,15 +13,16 @@ let createWindow = () => {
         },
     });
 
-    window.loadFile(path.join(__dirname, "index.html"));
+    window.setMenu(null);
+
+    window.loadFile(path.join(__dirname, "../index.html"));
 }
 
 app.on("ready", createWindow);
 
 // Installer functionality
 let fs = require("fs");
-let settings = require("./settings.json");
-console.log(settings);
+let settings = require("../settings.json");
 
 // Copy the app to a specified directory (e.g. installation dir) and also add an icon to start menu, desktop if specified
 function installApp(pathToApp, copyDir = "C:\Program Files", startMenuIcon = false, desktopIcon = false) {

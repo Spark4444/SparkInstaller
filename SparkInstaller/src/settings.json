@@ -1,8 +1,15 @@
 {
     "comment": "This file contains settings for the Spark Installer application.",
     "comment2": "Modify the 'exeDirectory' to the path where your app with executable is located.",
-    "exeDirectory": "C:\\Program Files\\SparkInstaller",
-    "appInstallationPath": false,
-    "dekstopIconPath": false,
-    "startMenuIconPath": false
+    "comment3": "Set 'appName' to the name of your application.",
+    "app": {
+        "exeDirectory": "C:\\Path\\To\\Your\\App",
+        "appName": "YourAppName"
+    },
+    "comment4": "Below are settings used by the uninstaller.",
+    "uninstaller": {
+        "appInstallationPath": false,
+        "dekstopIconPath": false,
+        "startMenuIconPath": false
+    }
 }

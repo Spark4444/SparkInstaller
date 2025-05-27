@@ -4,8 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SparkInstaller</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div>Hello world</div>
+    <div class="sections">
+        <div class="name">Greeting</div>
+        <div class="name">Installation Directory</div>
+        <div class="name">Shortcuts</div>
+        <div class="name">Installation</div>
+        <div class="name">Finish</div>
+    </div>
+    <div class="window">
+        <div class="message">Thank you for installing with Spark Installer!</div>
+    </div>
+    <div class="window">
+        <div class="message">Select the installation directory.</div>
+        <input type="text" class="installPath" placeholder="C:\Program Files" >
+        <input type="file" class="browseBtn" id="browseBtn" value="Browse" style="display: none;">
+        <label for="browseBtn">browse</label>
+        <div class="driveInfo">
+            <div class="driveName">Drive Name</div>
+            <div class="driveSize">Drive Size</div>
+            <div class="driveFreeSpace">Free Space</div>
+            <div class="appSize">App size</div>
+        </div>
+    </div>
+    <div class="window">
+        <div class="message">Create shortcuts for:</div>
+        <input type="checkbox" class="startMenuShortcut">
+        <input type="checkbox" class="desktopShortcut">
+    </div>
+    <div class="window">
+        <div class="message">Installation in progress. Please wait...</div>
+        <div class="progressBar"></div>
+        <div class="buttons">
+            <div class="cancelBtn">cancel</div>
+        </div>
+    </div>
+    <div class="window">
+        <div class="message">Installation complete! You can now run the application.</div>
+        <div class="buttons">
+            <div class="finishBtn">finish</div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
 </body>
 </html>
