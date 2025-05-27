@@ -1,0 +1,5 @@
+// Settings.json is used by the Installer to set the values for installer
+// e.g. the directory of the original executable which will be pasted into the installation directory and other things
+{
+    "exeDirectory": "C:\\Program Files\\SparkInstaller"
+}
