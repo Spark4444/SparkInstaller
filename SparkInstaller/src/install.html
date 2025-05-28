@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkInstaller</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="img/app.ico" type="image/x-icon">
+</head>
+<body>
+    <div class="sections">
+        <div class="name">Greeting</div>
+        <div class="name">Installation Directory</div>
+        <div class="name">Shortcuts</div>
+        <div class="name">Installation</div>
+        <div class="name">Finish</div>
+    </div>
+
+    <div class="window">
+        <div class="message message1">Thank you for using Spark Installer!</div>
+    </div>
+
+    <div class="window">
+        <div class="message message2">
+            <div class="messageText">Select the installation directory.</div>
+            <div class="dirInput">
+                <input type="text" class="installPath" placeholder="C:\Program Files" value="C:\Users\Owner\Documents" >
+                <div class="browseBtn">Browse...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="window">
+        <div class="message message3">
+            <div class="messageText2">Create shortcuts for:</div>
+            <div class="shortcutOptions">
+                <div class="shortcutOption">
+                    <label for="startMenuShortcut">Starting Menu</label>
+                    <input type="checkbox" id="startMenuShortcut" class="startMenuShortcut">
+                </div>
+                <div class="shortcutOption">
+                    <label for="desktopShortcut">Dekstop</label>
+                    <input type="checkbox" id="desktopShortcut" class="desktopShortcut">
+                </div>
+                </div>
+        </div>
+        <div class="buttons">
+            <div class="backBtn">back</div>
+            <div class="nextBtn">install</div>
+            <div class="closeBtn">close</div>
+        </div>
+    </div>
+
+    <div class="window">
+        <div class="message message4">
+            Installation in progress. Please wait...
+            <img src="img/loading.gif" alt="loading gif" class="loadingGif">
+        </div>
+        <div class="buttons">
+            <div class="backBtn" style="visibility: hidden;">back</div>
+            <div class="nextBtn" style="visibility: hidden;">next</div>
+            <div class="closeBtn">cancel</div>
+        </div>
+    </div>
+
+    <div class="window">
+        <div class="message message1">Installation complete! You can now use the app.</div>
+        <div class="buttons">
+            <div class="backBtn" style="visibility: hidden;">back</div>
+            <div class="nextBtn" style="visibility: hidden;">next</div>
+            <div class="finishBtn">finish</div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

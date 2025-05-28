@@ -88,38 +88,45 @@ function nextWindow() {
     if (currentWindowIndex === 1) {
         // Validate the installation path
         let installPath = document.querySelector(".installPath").value;
-        // Double validation to via regex and Electron's checkPath function which makes use of less recources since it checks the path via regex first
-        // And if the path invalid it will not check it via the filesystem
-        if (isValidWindowsPath(installPath)) {
-            if (window.electron &&  window.electron.checkPath) {
-                let diskPath = installPath.split("\\")[0] + "\\";
-                window.electron.checkPath(diskPath).then(isValid => {
-                    if (!isValid) {
-                        if (window.electron && window.electron.showAlert) {
-                            window.electron.showAlert(
-                                "Invalid Path",
-                                "The path you entered does not exist.",
-                                "Please enter a valid Windows installation path (e.g., 'C:\\Path To Installation Folder')."
-                            );
+        isValidWindowsPath(installPath).then(isValid => {
+            if (isValid === true) {
+                if (window.electron && window.electron.checkPath) {
+                    window.electron.checkPath(installPath)
+                    .then(pathExists => {
+                        if (pathExists) {
+                            nextWindowNoCheck();
+                        } 
+                        else {
+                            if (window.electron && window.electron.showAlert) {
+                                window.electron.showAlert(
+                                    "Invalid Path",
+                                    "The path you entered does not exist.",
+                                    "Please enter a valid Windows installation path (e.g., 'C:\\Path To Installation Folder')."
+                                );
+                            }
                         }
-                        return;
-                    }
-                    else {
-                        nextWindowNoCheck();
-                    }
-                });
+                    });
+                }
+            } 
+            else if (isValid === "admin") {
+                if (window.electron && window.electron.showAlert) {
+                    window.electron.showAlert(
+                        "Admin Privileges Required",
+                        "The path you entered requires admin privileges.",
+                        "Please run the installer as an administrator or choose a different path."
+                    );
+                }
+            } 
+            else {
+                if (window.electron && window.electron.showAlert) {
+                    window.electron.showAlert(
+                        "Invalid Path",
+                        "The path you entered is not valid.",
+                        "Please enter a valid Windows installation path (e.g., 'C:\\Path To Installation Folder')."
+                    );
+                }
             }
-        }
-        else {
-            if (window.electron && window.electron.showAlert) {
-                window.electron.showAlert(
-                    "Invalid Path",
-                    "The path you entered is not valid.",
-                    "Please enter a valid Windows installation path (e.g., 'C:\\Path To Installation Folder')."
-                );
-            }
-            return;
-        }
+        });
     }
 
     else if (currentWindowIndex === 2) {
@@ -175,6 +182,36 @@ async function closeWindow() {
 
 // Validates Windows file paths starting with drive letter (e.g., C:\)
 function isValidWindowsPath(path) {
-    const regex = /^[a-zA-Z]:\\(?:[^<>:"/\\|?*\r\n]+\\)*[^<>:"/\\|?*\r\n]*$/;
-    return regex.test(path);
+    let regex = /^[a-zA-Z]:\\(?:[^<>:"/\\|?*\r\n]+\\)*[^<>:"/\\|?*\r\n]*$/;
+    let adminFolders = [
+        ":\\",
+        ":\\Program Files",
+        ":\\Program Files (x86)",
+        ":\\Windows",
+        ":\\System32",
+        ":\\ProgramData",
+        ":\\Users"
+    ];
+
+    return new Promise(async (resolve) => {
+        if (!regex.test(path)) {
+            resolve(false);
+            return;
+        }
+        if (window.electron && window.electron.isUserRunningAsAdmin) {
+            let isAdmin = await window.electron.isUserRunningAsAdmin();
+            if (isAdmin) {
+                resolve(true);
+            } 
+            else if (adminFolders.some(folder => path.endsWith(folder))) {
+                resolve("admin");
+            } 
+            else {
+                resolve(true);
+            }
+        } 
+        else {
+            resolve(true);
+        }
+    });
 }

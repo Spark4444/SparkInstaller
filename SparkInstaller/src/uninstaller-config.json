@@ -1,6 +1,6 @@
 {
     "app":{
-        "appInstallationPath":false,
+        "InstallationPath":false,
         "dekstopIconPath":false,
         "startMenuIconPath":false
     }

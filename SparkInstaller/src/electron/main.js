@@ -1,5 +1,4 @@
 // THIS INSTALLER IS SPECIFICALLY MADE FOR WINDOWS
-
 let os = require("os");
 
 if (os.platform() !== "win32") {
@@ -9,6 +8,10 @@ if (os.platform() !== "win32") {
 // Electron
 let { app, BrowserWindow, ipcMain, dialog, shell } = require("electron");
 let path = require("path");
+let fs = require("fs");
+let installerConfig = require("../installer-config.json");
+let uninstallerConfig = require("../uninstaller-config.json");
+let forceClose = false;
 
 let createWindow = () => {
     let window = new BrowserWindow({
@@ -22,10 +25,13 @@ let createWindow = () => {
         },
     });
 
-    // window.setMenu(null);
+    window.setMenu(null);
 
     // Prompt the user if they want to close the installer
     window.on("close", async (event) => {
+        if (forceClose) {
+            return;
+        }
         event.preventDefault();
         let result = await dialog.showMessageBox(window, {
             type: "question",
@@ -42,7 +48,17 @@ let createWindow = () => {
         }
     });
 
-    window.loadFile(path.join(__dirname, "../index.html"));
+    if (fs.existsSync(installerConfig.app.exeDirectory)) {
+        window.loadFile(path.join(__dirname, "../install.html"));
+    }
+    else if (typeof uninstallerConfig.app.installationPath === "string" && fs.existsSync(uninstallerConfig.app.installationPath)) {
+        window.loadFile(path.join(__dirname, "../uninstall.html"));
+    }
+    else {
+        forceClose = true;
+        dialog.showErrorBox("Error", "The specified application directory does not exist. Please check the installer configuration.");
+        app.quit();
+    }
 }
 
 app.on("ready", createWindow);
@@ -61,10 +77,6 @@ function isAdmin() {
 }
 
 // Installer functionality
-let fs = require("fs");
-let installerConfig = require("../installer-config.json");
-let uninstallerConfig = require("../uninstaller-config.json");
-
 // Handle the dialog to check if a path exists
 ipcMain.handle("dialog:checkPath", async (event, pathToCheck) => {
     try {
