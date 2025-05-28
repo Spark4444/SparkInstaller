@@ -32,6 +32,7 @@ git clone https://github.com/Spark4444/FandomAdBlocker
 If you encounter any errors while using the installer, please check the following:
 - The app will show specific error messages in a dialog box of what went wrong.
 - Check the above steps again to ensure everything is set up correctly.
+- Also if errors persist check the debug.log file in the sparkinstaller-win32-x64 folder for more detailed information and report it on the issues page of this repository.
 
 ## Current State of this project
 Under development.
