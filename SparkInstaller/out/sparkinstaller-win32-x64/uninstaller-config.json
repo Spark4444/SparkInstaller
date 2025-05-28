@@ -1,1 +1,7 @@
-{"app":{"InstallationPath":false,"dekstopIconPath":false,"startMenuIconPath":false,"installationPath":"C:\\Users\\Owner\\Documents\\YourAppName","desktopIconPath":false}}
+{
+    "app":{
+        "InstallationPath":false,
+        "dekstopIconPath":false,
+        "startMenuIconPath":false
+    }
+}
