@@ -1,2 +1,2 @@
 # Use git LFS for out directory
-SparkInstaller\out\sparkinstaller-win32-x64\sparkinstaller.exe filter=lfs diff=lfs merge=lfs -text
+SparkInstaller/out/sparkinstaller-win32-x64/sparkinstaller.exe filter=lfs diff=lfs merge=lfs -text
