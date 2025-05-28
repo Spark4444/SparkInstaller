@@ -2,10 +2,6 @@ let { contextBridge, ipcRenderer } = require("electron");
 
 // Expose functions to the renderer process
 contextBridge.exposeInMainWorld("electron", {
-    // Function to send drive info e.g. drive space, free space, the size of the app.
-    sendDriveInfo: (driveInfo) => {
-        ipcRenderer.invoke("driveInfo", driveInfo);
-    },
     // Function to select a folder using the dialog
     selectFolder: () => {
         return ipcRenderer.invoke("dialog:openFolder")

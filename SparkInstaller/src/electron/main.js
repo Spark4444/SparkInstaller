@@ -64,10 +64,6 @@ function isAdmin() {
 let fs = require("fs");
 let settings = require("../settings.json");
 
-// Handle the drive info sent from the renderer process
-ipcMain.handle("driveInfo", async (event, driveInfo) => {
-});
-
 // Handle the dialog to check if a path exists
 ipcMain.handle("dialog:checkPath", async (event, pathToCheck) => {
     try {

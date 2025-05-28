@@ -9,7 +9,7 @@
     border: 0.1vw solid white;
     cursor: pointer;
     display: flex;
-    height: 100%;
+    height: 22%;
     justify-content: center;
     transition: 0.5s;
     width: 26%;
@@ -42,7 +42,7 @@
 .dirInput {
     align-items: center;
     display: flex;
-    height: 3.5vw;
+    height: 80%;
     justify-content: space-evenly;
     width: 100%;
 }
@@ -65,7 +65,7 @@
     border: 0.1vw solid white;
     color: white;
     font-size: 1.5vw;
-    height: 100%;
+    height: 22%;
     outline: none;
     padding: 0 0 0 0.5vw;
     width: 51%;
@@ -114,7 +114,7 @@
     align-items: center;
     border-bottom: 0.1vw solid white;
     display: flex;
-    height: 8vw;
+    height: 20%;
     justify-content: center;
     width: 100%;
 }
