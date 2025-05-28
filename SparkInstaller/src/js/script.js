@@ -75,6 +75,14 @@ document.querySelector(".browseBtn").addEventListener("click", async () => {
     }
 })
 
+function nextWindowNoCheck() {
+    if (currentWindowIndex < windows.length - 1) {
+        windows[currentWindowIndex].style.display = "none";
+        currentWindowIndex++;
+        windows[currentWindowIndex].style.display = "";
+    }
+}
+
 // Navigates to the next window in the installer
 function nextWindow() {
     if (currentWindowIndex === 1) {
@@ -87,29 +95,57 @@ function nextWindow() {
                 let diskPath = installPath.split("\\")[0] + "\\";
                 window.electron.checkPath(diskPath).then(isValid => {
                     if (!isValid) {
-                        alert("Please enter a valid disk path that exists on your device (e.g., 'C:\\').");
+                        if (window.electron && window.electron.showAlert) {
+                            window.electron.showAlert(
+                                "Invalid Path",
+                                "The path you entered does not exist.",
+                                "Please enter a valid Windows installation path (e.g., 'C:\\Path To Installation Folder')."
+                            );
+                        }
                         return;
+                    }
+                    else {
+                        nextWindowNoCheck();
                     }
                 });
             }
         }
         else {
-            alert("Please enter a valid Windows installation path (e.g., 'C:\\Path To Installation Folder').");
+            if (window.electron && window.electron.showAlert) {
+                window.electron.showAlert(
+                    "Invalid Path",
+                    "The path you entered is not valid.",
+                    "Please enter a valid Windows installation path (e.g., 'C:\\Path To Installation Folder')."
+                );
+            }
             return;
         }
     }
 
-    if (currentWindowIndex === 2) {
+    else if (currentWindowIndex === 3) {
         if (window.electron && window.electron.sendAppData) {
             let installPath = document.querySelector(".installPath").value;
-            window.electron.sendAppData(installPath, startMenuIcon, desktopIcon);
+            window.electron.sendAppData(installPath, startMenuIcon, desktopIcon)
+            .then(success => {
+                if (success) {
+                    nextWindowNoCheck();
+                } 
+                else {
+                    if (window.electron && window.electron.showAlert) {
+                        window.electron.showAlert(
+                            "Installation Error",
+                            "An error occurred during installation.",
+                            "Please try again."
+                        );
+                    }
+                    location.reload();
+                }
+            });
         }
     }
 
-    if (currentWindowIndex < windows.length - 1) {
-        windows[currentWindowIndex].style.display = "none";
-        currentWindowIndex++;
-        windows[currentWindowIndex].style.display = "";
+    else {
+        nextWindowNoCheck();
     }
 }
 
@@ -123,9 +159,16 @@ function backWindow() {
 }
 
 // Closes the installer window with a confirmation dialog
-function closeWindow() {
-    if (confirm("Are you sure you want to close the installer? Any changes made will not be saved.")) {
-        window.close();
+async function closeWindow() {
+    if (window.electron && window.electron.confirmExit) {
+        let confirmExit = await window.electron.confirmExit(
+            "Confirm Exit",
+            "Are you sure you want to close the installer?",
+            "Any changes made will not be saved."
+        );
+        if (confirmExit) {
+            window.close();
+        }
     }
 }
 

@@ -3,7 +3,7 @@
     "comment2": "Modify the 'exeDirectory' to the path where your app with executable is located.",
     "comment3": "Set 'appName' to the name of your application.",
     "app": {
-        "exeDirectory": "C:\\Path\\To\\Your\\App",
+        "exeDirectory": "C:\\Users\\Owner\\Documents\\GitHub\\SparkInstaller\\mettaton-neo-fangame-win32-x64",
         "appName": "YourAppName"
     },
     "comment4": "Below are settings used by the uninstaller.",
