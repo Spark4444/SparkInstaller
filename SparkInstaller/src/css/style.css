@@ -9,7 +9,7 @@
     border: 0.1vw solid white;
     cursor: pointer;
     display: flex;
-    height: 22%;
+    height: 16%;
     justify-content: center;
     transition: 0.5s;
     width: 26%;
@@ -65,7 +65,7 @@
     border: 0.1vw solid white;
     color: white;
     font-size: 1.5vw;
-    height: 22%;
+    height: 16%;
     outline: none;
     padding: 0 0 0 0.5vw;
     width: 51%;

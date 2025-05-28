@@ -1,0 +1,6 @@
+{
+    "app": {
+        "exeDirectory": "Path/to/your/executable",
+        "appName": "YourAppName"
+    }
+}

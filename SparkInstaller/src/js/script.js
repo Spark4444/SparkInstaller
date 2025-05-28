@@ -122,7 +122,8 @@ function nextWindow() {
         }
     }
 
-    else if (currentWindowIndex === 3) {
+    else if (currentWindowIndex === 2) {
+        nextWindowNoCheck();
         if (window.electron && window.electron.sendAppData) {
             let installPath = document.querySelector(".installPath").value;
             window.electron.sendAppData(installPath, startMenuIcon, desktopIcon)

@@ -62,7 +62,8 @@ function isAdmin() {
 
 // Installer functionality
 let fs = require("fs");
-let settings = require("../settings.json");
+let installerConfig = require("../installer-config.json");
+let uninstallerConfig = require("../uninstaller-config.json");
 
 // Handle the dialog to check if a path exists
 ipcMain.handle("dialog:checkPath", async (event, pathToCheck) => {
@@ -96,7 +97,7 @@ ipcMain.handle("dialog:openFolder", async (event) => {
 // Handle the app data sent from the renderer process
 ipcMain.handle("appData", async (event, copyDir, startMenuIcon, desktopIcon) => {
     try {
-        await installApp(settings.app.exeDirectory, copyDir, startMenuIcon, desktopIcon);
+        await installApp(installerConfig.app.exeDirectory, copyDir, startMenuIcon, desktopIcon);
         return true;
     }
     catch (error) {
@@ -197,11 +198,11 @@ function createShortcut(execPath, location, appName) {
     let shortcutPath = null;
     switch (location) {
         case "desktop":
-            let desktopDir = path.getPath("desktop");
+            let desktopDir = path.join(process.env.USERPROFILE, "Desktop");
             shortcutPath = path.join(desktopDir, appName + ".lnk");
             break;
         case "startMenu":
-            let startMenuDir = path.getPath("startMenu");
+            let startMenuDir = path.join(process.env.APPDATA, "Microsoft", "Windows", "Start Menu", "Programs");
             shortcutPath = path.join(startMenuDir, appName + ".lnk");
             break;
     }
@@ -217,6 +218,32 @@ function createShortcut(execPath, location, appName) {
     });
 }
 
+// Function to copy all files from a folder to a destination path synchronously
+// Fix errors with .asar files not being copied correctly
+function copyAllFilesSync(folderPath, destinationPath) {
+    if (!fs.existsSync(folderPath)) {
+        throw new Error("The specified folder does not exist: " + folderPath);
+    }
+
+    if (!fs.existsSync(destinationPath)) {
+        fs.mkdirSync(destinationPath, { recursive: true });
+    }
+
+    let files = readAllDirSync(folderPath);
+
+    files.forEach(file => {
+        let destFilePath = path.join(destinationPath, file.name);
+        if (file.type === "file") {
+            fs.copyFileSync(file.path, destFilePath);
+        } 
+        else if (file.type === "directory") {
+            copyAllFilesSync(file.path, destFilePath);
+        }
+    });
+
+    return true;
+}
+
 // Copy the app to a specified directory (e.g. installation dir) and also add an icon to start menu, desktop if specified
 function installApp(pathToApp, copyDir = "C:\Program Files", startMenuIcon = false, desktopIcon = false) {
     console.log("Installing app from:", pathToApp);
@@ -226,17 +253,7 @@ function installApp(pathToApp, copyDir = "C:\Program Files", startMenuIcon = fal
     // Validate the arguments
     if (typeof pathToApp === "string" && typeof copyDir === "string" && typeof startMenuIcon === "boolean" && typeof desktopIcon === "boolean") {
         let execPath = null;
-        let appName = null;
         let destinationPath = null;
-
-        // Copy the icons to their respective locations if specified
-        if (startMenuIcon) {
-            createShortcut(execPath, "startMenu", settings.app.appName);
-        }
-
-        if (desktopIcon) {
-            createShortcut(execPath, "desktop", settings.app.appName);
-        }
 
         // Check if the app exists at the specified path e.g. the exe file is present
         if (!fs.existsSync(pathToApp)) {
@@ -244,8 +261,16 @@ function installApp(pathToApp, copyDir = "C:\Program Files", startMenuIcon = fal
         }
         else {
             execPath = findExecutable(pathToApp);
-            appName = path.basename(execPath, path.extname(execPath));
-            destinationPath = path.join(copyDir, appName);
+            destinationPath = path.join(copyDir, installerConfig.app.appName);
+        }
+
+        // Copy the icons to their respective locations if specified
+        if (startMenuIcon) {
+            createShortcut(execPath, "startMenu", installerConfig.app.appName);
+        }
+
+        if (desktopIcon) {
+            createShortcut(execPath, "desktop", installerConfig.app.appName);
         }
 
         // Create the copy directory if it does not exist
@@ -258,8 +283,14 @@ function installApp(pathToApp, copyDir = "C:\Program Files", startMenuIcon = fal
             console.warn("The specified copy directory is not empty: " + destinationPath);
         }
 
-        // Copy the app to the specified directory
-        fs.copyFileSync(execPath, destinationPath);
+        // Copy the app to the specified directory and update the uninstaller config
+        if (copyAllFilesSync(pathToApp, destinationPath)) {
+            uninstallerConfig.app.installationPath = destinationPath;
+            uninstallerConfig.app.startMenuIconPath = startMenuIcon ? path.join(process.env.APPDATA, "Microsoft", "Windows", "Start Menu", "Programs", installerConfig.app.appName + ".lnk") : false;
+            uninstallerConfig.app.desktopIconPath = desktopIcon ? path.join(process.env.USERPROFILE, "Desktop", installerConfig.app.appName + ".lnk") : false;
+
+            fs.writeFileSync(path.join(__dirname, "../uninstaller-config.json"), JSON.stringify(uninstallerConfig));
+        }
     }
     else {
         throw new Error("Invalid arguments passed to installApp function.");
