@@ -11,7 +11,7 @@ contextBridge.exposeInMainWorld("electron", {
         return ipcRenderer.invoke("dialog:checkPath", path);
     },
     // Function to send app data for installation
-    sendAppData: (copyDir = "C:\Program Files", startMenuIcon = false, desktopIcon = false) => {
+    sendAppData: (copyDir, startMenuIcon = false, desktopIcon = false) => {
         return ipcRenderer.invoke("appData", copyDir, startMenuIcon, desktopIcon);
     },
     // Function to check if the user has admin privileges

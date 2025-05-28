@@ -5,7 +5,7 @@
   "main": "src/electron/main.js",
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package",
+    "package": "electron-forge package && node ../configs/config.js",
     "make": "electron-forge make"
   },
   "author": "Spark",

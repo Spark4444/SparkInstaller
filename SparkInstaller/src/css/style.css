@@ -80,6 +80,15 @@
     width: 2vw;
 }
 
+.message1 {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: 8%;
+    justify-content: space-between;
+    width: 100%;
+}
+
 .message2 {
     align-items: center;
     border-radius: 0.5vw;

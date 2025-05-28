@@ -1,4 +1,18 @@
 // THIS INSTALLER IS SPECIFICALLY MADE FOR WINDOWS
+
+// Track the main process logs
+let logStream = require("fs").createWriteStream("debug.log", { flags: "a" });
+console.log = function (...args) {
+    logStream.write(args.join(" ") + "\n");
+    process.stdout.write(args.join(" ") + "\n");
+};
+console.error = function (...args) {
+    logStream.write("[ERROR] " + args.join(" ") + "\n");
+    process.stderr.write(args.join(" ") + "\n");
+};
+
+// Check if the current platform is Windows
+// If not, throw an error and exit the process
 let os = require("os");
 
 if (os.platform() !== "win32") {
@@ -9,9 +23,15 @@ if (os.platform() !== "win32") {
 let { app, BrowserWindow, ipcMain, dialog, shell } = require("electron");
 let path = require("path");
 let fs = require("fs");
-let installerConfig = require("../installer-config.json");
-let uninstallerConfig = require("../uninstaller-config.json");
+// Get the directory of the current executable and read the installer configuration
+let exeDir = process.env.PORTABLE_EXECUTABLE_DIR || path.dirname(process.execPath);
+let appFolderPath = path.join(exeDir, "App");
+let installerConfigPath = path.join(exeDir, "installer-config.json");
+let installerConfig = JSON.parse(fs.readFileSync(installerConfigPath, "utf-8"));
+let uninstallerConfigPath = path.join(exeDir, "uninstaller-config.json");
+let uninstallerConfig = JSON.parse(fs.readFileSync(uninstallerConfigPath, "utf-8"));
 let forceClose = false;
+let executablePath = findExecutable(appFolderPath);
 
 let createWindow = () => {
     let window = new BrowserWindow({
@@ -25,11 +45,12 @@ let createWindow = () => {
         },
     });
 
-    window.setMenu(null);
+    // window.setMenu(null);
 
     // Prompt the user if they want to close the installer
     window.on("close", async (event) => {
         if (forceClose) {
+            app.quit();
             return;
         }
         event.preventDefault();
@@ -48,10 +69,10 @@ let createWindow = () => {
         }
     });
 
-    if (fs.existsSync(installerConfig.app.exeDirectory)) {
+    if (executablePath) {
         window.loadFile(path.join(__dirname, "../install.html"));
     }
-    else if (typeof uninstallerConfig.app.installationPath === "string" && fs.existsSync(uninstallerConfig.app.installationPath)) {
+    else if (typeof uninstallerConfig.app.installationPath === "string" && executablePath) {
         window.loadFile(path.join(__dirname, "../uninstall.html"));
     }
     else {
@@ -61,6 +82,14 @@ let createWindow = () => {
     }
 }
 
+// Close the app when all windows are closed, except on darwin (macOS)
+app.on("window-all-closed", () => {
+    if (os.platform() !== "darwin") {
+        app.quit();
+    }
+});
+
+// Create the main window when the app is ready
 app.on("ready", createWindow);
 
 // Check admin privileges
@@ -109,7 +138,7 @@ ipcMain.handle("dialog:openFolder", async (event) => {
 // Handle the app data sent from the renderer process
 ipcMain.handle("appData", async (event, copyDir, startMenuIcon, desktopIcon) => {
     try {
-        await installApp(installerConfig.app.exeDirectory, copyDir, startMenuIcon, desktopIcon);
+        await installApp(copyDir, startMenuIcon, desktopIcon);
         return true;
     }
     catch (error) {
@@ -257,32 +286,22 @@ function copyAllFilesSync(folderPath, destinationPath) {
 }
 
 // Copy the app to a specified directory (e.g. installation dir) and also add an icon to start menu, desktop if specified
-function installApp(pathToApp, copyDir = "C:\Program Files", startMenuIcon = false, desktopIcon = false) {
-    console.log("Installing app from:", pathToApp);
-    console.log("Copying app to:", copyDir);
-    console.log("Start Menu Icon:", startMenuIcon);
-    console.log("Desktop Icon:", desktopIcon);
+function installApp(copyDir, startMenuIcon = false, desktopIcon = false) {
     // Validate the arguments
-    if (typeof pathToApp === "string" && typeof copyDir === "string" && typeof startMenuIcon === "boolean" && typeof desktopIcon === "boolean") {
-        let execPath = null;
+    if (typeof copyDir === "string" && typeof startMenuIcon === "boolean" && typeof desktopIcon === "boolean") {
         let destinationPath = null;
+        let newExePath = null;
 
-        // Check if the app exists at the specified path e.g. the exe file is present
-        if (!fs.existsSync(pathToApp)) {
-            throw new Error("The specified app does not exist at the given path: " + pathToApp);
-        }
-        else {
-            execPath = findExecutable(pathToApp);
-            destinationPath = path.join(copyDir, installerConfig.app.appName);
-        }
+        destinationPath = path.join(copyDir, installerConfig.app.appName);
+        newExePath = path.join(destinationPath, path.basename(executablePath));
 
         // Copy the icons to their respective locations if specified
         if (startMenuIcon) {
-            createShortcut(execPath, "startMenu", installerConfig.app.appName);
+            createShortcut(executablePath, "startMenu", path.basename(executablePath));
         }
 
         if (desktopIcon) {
-            createShortcut(execPath, "desktop", installerConfig.app.appName);
+            createShortcut(executablePath, "desktop", path.basename(executablePath));
         }
 
         // Create the copy directory if it does not exist
@@ -296,12 +315,12 @@ function installApp(pathToApp, copyDir = "C:\Program Files", startMenuIcon = fal
         }
 
         // Copy the app to the specified directory and update the uninstaller config
-        if (copyAllFilesSync(pathToApp, destinationPath)) {
+        if (copyAllFilesSync(appFolderPath, destinationPath)) {
             uninstallerConfig.app.installationPath = destinationPath;
             uninstallerConfig.app.startMenuIconPath = startMenuIcon ? path.join(process.env.APPDATA, "Microsoft", "Windows", "Start Menu", "Programs", installerConfig.app.appName + ".lnk") : false;
             uninstallerConfig.app.desktopIconPath = desktopIcon ? path.join(process.env.USERPROFILE, "Desktop", installerConfig.app.appName + ".lnk") : false;
 
-            fs.writeFileSync(path.join(__dirname, "../uninstaller-config.json"), JSON.stringify(uninstallerConfig));
+            fs.writeFileSync(uninstallerConfigPath, JSON.stringify(uninstallerConfig));
         }
     }
     else {
