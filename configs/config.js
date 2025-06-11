@@ -6,7 +6,7 @@ let fs = require("fs");
 // Paths
 let outDir = path.join(__dirname, "../SparkInstaller/out");
 let installerDir = path.join(outDir, "sparkinstaller-win32-x64");
-let appDir = path.join(installerDir, "app");
+let appDir = path.join(installerDir, "../app");
 let uninstallerConfigSrc = path.join(__dirname, "uninstaller-config.json");
 let uninstallerConfigDest = path.join(installerDir, "uninstaller-config.json");
 let configSrc = path.join(__dirname, "installer-config.json"); 

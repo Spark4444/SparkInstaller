@@ -25,13 +25,19 @@ let path = require("path");
 let fs = require("fs");
 // Get the directory of the current executable and read the installer configuration
 let exeDir = process.env.PORTABLE_EXECUTABLE_DIR || path.dirname(process.execPath);
-let appFolderPath = path.join(exeDir, "App");
+let appFolderPath = path.join(exeDir, "../App");
 let installerConfigPath = path.join(exeDir, "installer-config.json");
 let installerConfig = JSON.parse(fs.readFileSync(installerConfigPath, "utf-8"));
 let uninstallerConfigPath = path.join(exeDir, "uninstaller-config.json");
 let uninstallerConfig = JSON.parse(fs.readFileSync(uninstallerConfigPath, "utf-8"));
 let forceClose = false;
 let executablePath = findExecutable(appFolderPath);
+
+// Check if only one instance of the app is running, only allow one instance to run
+let gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+    app.quit();
+} 
 
 let createWindow = () => {
     let window = new BrowserWindow({
@@ -45,7 +51,7 @@ let createWindow = () => {
         },
     });
 
-    // window.setMenu(null);
+    window.setMenu(null);
 
     // Prompt the user if they want to close the installer
     window.on("close", async (event) => {
@@ -65,7 +71,8 @@ let createWindow = () => {
         });
 
         if (result.response === 0) {
-            window.destroy();
+            forceClose = true;
+            app.quit();
         }
     });
 
@@ -190,7 +197,7 @@ function readAllDirSync(dir) {
     let allFiles = [];
     files.forEach(file => {
         let subDir = path.join(dir, file);
-        if (!fs.statSync(subDir).isDirectory()) {
+        if (file.endsWith(".asar") || !fs.statSync(subDir).isDirectory()) {
             allFiles.push({ name: file, path: subDir, type: "file" });
         }
         else {
@@ -260,7 +267,6 @@ function createShortcut(execPath, location, appName) {
 }
 
 // Function to copy all files from a folder to a destination path synchronously
-// Fix errors with .asar files not being copied correctly
 function copyAllFilesSync(folderPath, destinationPath) {
     if (!fs.existsSync(folderPath)) {
         throw new Error("The specified folder does not exist: " + folderPath);
