@@ -27,5 +27,11 @@ if (!fs.existsSync(appDir)) {
 }
 
 // Create a dummy test.exe file in the app directory for testing purposes and to ensure app can actually run even if no other files are present
-let testExePath = path.join(appDir, "test.exe");
-fs.closeSync(fs.openSync(testExePath, 'w'))
+// Check if the folder is empty if not add a test.exe file
+if (fs.readdirSync(appDir).length > 0) {
+    console.log("App directory is not empty, skipping test.exe creation.");
+}
+else {
+    let testExePath = path.join(appDir, "test.exe");
+    fs.closeSync(fs.openSync(testExePath, "w"));
+}

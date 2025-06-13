@@ -1,0 +1,1 @@
+[ERROR] Error during app installation: Error: Asar files are not supported by the installer. Please remove the .asar files from the app folder: C:\Users\Owner\Documents\GitHub\SparkInstaller\SparkInstaller\out\App\resources\app.asar

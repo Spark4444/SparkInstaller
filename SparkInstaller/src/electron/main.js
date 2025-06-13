@@ -280,6 +280,9 @@ function copyAllFilesSync(folderPath, destinationPath) {
 
     files.forEach(file => {
         let destFilePath = path.join(destinationPath, file.name);
+        if (file.name.endsWith(".asar")) {
+            throw new Error("Asar files are not supported by the installer. Please remove the .asar files from the app folder: " + file.path);
+        }
         if (file.type === "file") {
             fs.copyFileSync(file.path, destFilePath);
         } 
